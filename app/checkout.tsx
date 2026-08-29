@@ -1,26 +1,26 @@
+import * as ImagePicker from 'expo-image-picker';
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  View,
-  Text,
+  ActivityIndicator,
+  Alert,
+  Image,
+  ScrollView,
   StyleSheet,
+  Text,
   TextInput,
   TouchableOpacity,
-  ScrollView,
-  Image,
-  Alert,
-  ActivityIndicator,
+  View,
 } from 'react-native';
-import { useRouter } from 'expo-router';
-import * as ImagePicker from 'expo-image-picker';
 import { useCart } from '../context/CartContext';
 import { supabase } from '../lib/supabase';
 
 // TODO: replace with your real banking details
 const BANK_DETAILS = {
   accountName: 'Sip It (Pty) Ltd',
-  bank: 'Your Bank Name',
-  accountNumber: '0000000000',
-  branchCode: '000000',
+  bank: 'Capitec',
+  accountNumber: '1716630388',
+  branchCode: '00000',
 };
 
 export default function CheckoutScreen() {
