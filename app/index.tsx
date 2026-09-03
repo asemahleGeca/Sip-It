@@ -1,21 +1,33 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
+import React from 'react';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const IndexScreen = () => {
   const router = useRouter();
 
   return (
     <View style={styles.background}>
-      {/* Decorative glow shapes */}
+      {/* Bold decorative glow shapes */}
       <View style={styles.glowTop} />
+      <View style={styles.glowMid} />
       <View style={styles.glowBottom} />
+
+      {/* Logo watermark behind hero content */}
+      <Image
+        source={require('../assets/images/sip-it-logo.png')}
+        style={styles.watermark}
+        resizeMode="contain"
+      />
 
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.logoRow}>
           <View style={styles.logoBadge}>
-            <Text style={styles.logoEmoji}>🍸</Text>
+            <Image
+              source={require('../assets/images/sip-it-logo.png')}
+              style={styles.logoImage}
+              resizeMode="contain"
+            />
           </View>
           <Text style={styles.brand}>Sip It</Text>
         </View>
@@ -59,8 +71,8 @@ export default IndexScreen;
 
 const ACCENT = '#FF7A5C';
 const ACCENT_DEEP = '#E85A3C';
-const BG = '#14121A';
-const CARD = 'rgba(255,255,255,0.06)';
+const BG = '#241031';
+const CARD = 'rgba(255,255,255,0.08)';
 
 const styles = StyleSheet.create({
   background: {
@@ -70,21 +82,38 @@ const styles = StyleSheet.create({
   },
   glowTop: {
     position: 'absolute',
-    top: -120,
-    right: -80,
-    width: 300,
-    height: 300,
-    borderRadius: 150,
-    backgroundColor: 'rgba(255,122,92,0.18)',
+    top: -140,
+    right: -100,
+    width: 380,
+    height: 380,
+    borderRadius: 190,
+    backgroundColor: 'rgba(255,122,92,0.35)',
   },
-  glowBottom: {
+  glowMid: {
     position: 'absolute',
-    bottom: -140,
-    left: -100,
+    top: '35%',
+    left: -140,
     width: 320,
     height: 320,
     borderRadius: 160,
-    backgroundColor: 'rgba(122,92,255,0.14)',
+    backgroundColor: 'rgba(255,200,80,0.22)',
+  },
+  glowBottom: {
+    position: 'absolute',
+    bottom: -160,
+    left: -80,
+    width: 400,
+    height: 400,
+    borderRadius: 200,
+    backgroundColor: 'rgba(150,80,255,0.30)',
+  },
+  watermark: {
+    position: 'absolute',
+    alignSelf: 'center',
+    top: '24%',
+    width: 380,
+    height: 380,
+    opacity: 0.14,
   },
   header: {
     flexDirection: 'row',
@@ -100,20 +129,22 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   logoBadge: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
+    width: 44,
+    height: 44,
+    borderRadius: 14,
     backgroundColor: CARD,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.12)',
+    borderColor: 'rgba(255,255,255,0.18)',
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
   },
-  logoEmoji: {
-    fontSize: 20,
+  logoImage: {
+    width: 32,
+    height: 32,
   },
   brand: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '800',
     color: '#fff',
     letterSpacing: 0.3,
@@ -127,7 +158,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 22,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.25)',
+    borderColor: 'rgba(255,255,255,0.3)',
   },
   navButtonGhostText: {
     fontSize: 13,
@@ -154,7 +185,7 @@ const styles = StyleSheet.create({
   pill: {
     backgroundColor: CARD,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.12)',
+    borderColor: 'rgba(255,255,255,0.18)',
     paddingVertical: 6,
     paddingHorizontal: 14,
     borderRadius: 20,
@@ -167,16 +198,19 @@ const styles = StyleSheet.create({
     letterSpacing: 1.2,
   },
   title: {
-    fontSize: 40,
+    fontSize: 42,
     fontWeight: '800',
     color: '#fff',
     textAlign: 'center',
-    lineHeight: 46,
+    lineHeight: 48,
     marginBottom: 18,
+    textShadowColor: 'rgba(0,0,0,0.3)',
+    textShadowOffset: { width: 0, height: 4 },
+    textShadowRadius: 12,
   },
   subtitle: {
     fontSize: 16,
-    color: 'rgba(255,255,255,0.65)',
+    color: 'rgba(255,255,255,0.75)',
     textAlign: 'center',
     lineHeight: 24,
     marginBottom: 40,
@@ -191,10 +225,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 36,
     borderRadius: 32,
     shadowColor: ACCENT_DEEP,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.4,
-    shadowRadius: 16,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.5,
+    shadowRadius: 20,
+    elevation: 10,
   },
   buttonText: {
     fontSize: 17,
