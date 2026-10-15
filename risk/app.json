@@ -1,0 +1,21 @@
+{
+  "expo": {
+    "name": "Risk It",
+    "slug": "risk-it",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "riskit",
+    "userInterfaceStyle": "automatic",
+    "android": {
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "output": "static"
+    },
+    "plugins": ["expo-router"],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}
