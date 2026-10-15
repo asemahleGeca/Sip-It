@@ -1,3 +1,5 @@
+import { supabase } from './supabaseconfig';
+
 export type CourseModule = {
   id: string;
   position: number;
@@ -17,16 +19,24 @@ export type Student = {
   name: string;
   surname: string;
   email: string;
-  passwordHash: string;
   cellphoneNumber: string;
   country: string;
   dateOfBirth: string;
   address: string;
   createdAt: string;
-  course: Course;
+  course: Course | null;
 };
 
-type Registration = Omit<Student, 'id' | 'createdAt' | 'course'> & { courseId: string };
+export type Registration = Omit<Student, 'id' | 'createdAt' | 'course'> & {
+  password: string;
+};
+
+export type StudentProfileDetails = Pick<
+  Student,
+  'name' | 'surname' | 'cellphoneNumber' | 'country' | 'dateOfBirth' | 'address'
+>;
+
+type Result = { ok: true } | { ok: false; message: string };
 
 export const COURSES: Course[] = [
   {
@@ -64,34 +74,123 @@ export const COURSES: Course[] = [
   },
 ];
 
-const students: Student[] = [];
-
-export function registerStudent(registration: Registration): { ok: true } | { ok: false; message: string } {
-  if (students.some((student) => student.email === registration.email)) {
-    return { ok: false, message: 'That email is already registered.' };
-  }
-
-  const course = COURSES.find((option) => option.id === registration.courseId);
-  if (!course) {
-    return { ok: false, message: 'Please choose one of the available courses.' };
-  }
-
-  const { courseId, ...studentData } = registration;
-  students.push({
-    ...studentData,
-    id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-    createdAt: new Date().toISOString(),
-    course,
+export async function registerStudent(r: Registration): Promise<Result> {
+  const { data, error } = await supabase.auth.signUp({
+    email: r.email.trim().toLowerCase(),
+    password: r.password,
+    options: {
+      data: {
+        name: r.name,
+        surname: r.surname,
+        cellphone_number: r.cellphoneNumber,
+        country: r.country,
+        date_of_birth: r.dateOfBirth,
+        address: r.address,
+      },
+    },
   });
+  if (error) {
+    if (error.code === 'user_already_exists') {
+      return { ok: false, message: 'An account with this email already exists. Please log in instead.' };
+    }
+    return { ok: false, message: error.message };
+  }
+  if (!data.user) {
+    return { ok: false, message: 'Registration failed. Please try again.' };
+  }
+  if (data.user.identities?.length === 0) {
+    return { ok: false, message: 'An account with this email already exists. Please log in instead.' };
+  }
+
+  if (data.session) {
+    const { error: profileError } = await supabase.from('profiles').upsert({
+      id: data.user.id,
+      name: r.name.trim(),
+      surname: r.surname.trim(),
+      cellphone_number: r.cellphoneNumber.trim(),
+      country: r.country.trim(),
+      date_of_birth: r.dateOfBirth.trim(),
+      address: r.address.trim(),
+    }, { onConflict: 'id' });
+
+    if (profileError) {
+      return { ok: false, message: `Your account was created, but your student details could not be saved: ${profileError.message}` };
+    }
+  }
+
   return { ok: true };
 }
 
-export function loginStudent(email: string, passwordHash: string): Student | null {
-  const normalizedEmail = email.trim().toLowerCase();
-  return students.find((student) => student.email === normalizedEmail && student.passwordHash === passwordHash) ?? null;
+export async function loginStudent(email: string, password: string): Promise<Student> {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: email.trim().toLowerCase(),
+    password,
+  });
+  if (error) throw error;
+  if (!data.user) throw new Error('Login did not return an authenticated student.');
+  const student = await getStudentById(data.user.id);
+  if (!student) throw new Error('Your student profile could not be found. Please contact support.');
+  return student;
 }
 
-export function getStudentById(id: string | undefined): Student | null {
-  if (!id) return null;
-  return students.find((student) => student.id === id) ?? null;
+export async function selectStudentCourse(
+  courseId: string,
+  profile?: StudentProfileDetails | null,
+): Promise<Result> {
+  if (!COURSES.some((course) => course.id === courseId)) {
+    return { ok: false, message: 'Please choose one of the available courses.' };
+  }
+
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError) return { ok: false, message: userError.message };
+  if (!user) return { ok: false, message: 'Please log in again to choose a course.' };
+
+  const profileData = profile
+    ? {
+        name: profile.name.trim(),
+        surname: profile.surname.trim(),
+        cellphone_number: profile.cellphoneNumber.trim(),
+        country: profile.country.trim(),
+        date_of_birth: profile.dateOfBirth.trim(),
+        address: profile.address.trim(),
+      }
+    : {};
+  const { error } = await supabase
+    .from('profiles')
+    .upsert({ id: user.id, ...profileData, course_id: courseId }, { onConflict: 'id' });
+  if (error) return { ok: false, message: error.message };
+  return { ok: true };
+}
+
+export async function getStudentById(id: string | undefined): Promise<Student | null> {
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError) throw userError;
+  if (!user || (id !== undefined && id !== user.id)) return null;
+
+  const { data: profile, error: profileError } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .maybeSingle();
+  if (profileError) throw profileError;
+  if (!profile) return null;
+
+  const course = COURSES.find((c) => c.id === profile.course_id);
+  return {
+    id: profile.id,
+    name: profile.name,
+    surname: profile.surname,
+    email: user.email ?? '',
+    cellphoneNumber: profile.cellphone_number,
+    country: profile.country,
+    dateOfBirth: profile.date_of_birth,
+    address: profile.address,
+    createdAt: profile.created_at,
+    course: course ?? null,
+  };
+}
+
+export async function logoutStudent() {
+  const { error } = await supabase.auth.signOut();
+  if (error) throw error;
 }
