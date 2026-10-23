@@ -43,8 +43,7 @@ export default function ShopScreen() {
             .from("products")
             .select("id, name, slug, description, price, image_url, category, sizes, stock")
             .eq("active", true)
-            .order("created_at", { ascending: false })
-            .returns<Product[]>();
+            .order("created_at", { ascending: false });
           if (!active) return;
           if (queryError) setError(queryError.message);
           else setProducts(data ?? []);

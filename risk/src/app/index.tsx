@@ -4,8 +4,8 @@ import { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Button } from "../components/shop-ui";
 import { ScreenBackground } from "../components/screen-background";
+import { Button } from "../components/shop-ui";
 import { useAuth } from "../context/auth";
 import { colors } from "../theme/colors";
 
@@ -22,12 +22,13 @@ export default function WelcomeScreen() {
       <SafeAreaView style={styles.container}>
         <StatusBar style="light" />
         <View style={styles.topline}>
-          <Text style={styles.toplineText}>RISK IT</Text>
+          <Text style={styles.toplineText}>RISK</Text>
           <Text style={styles.toplineText}>INDEPENDENT LABEL</Text>
+          <Text style={styles.toplineText}>INGOZI</Text>
         </View>
         <View style={styles.brand}>
           <Text style={styles.eyebrow}>DRESS LIKE YOU MEAN IT</Text>
-          <Text style={styles.wordmark}>RISK IT</Text>
+          <Text style={styles.wordmark}>RISK</Text>
           <View style={styles.signature}>
             <View style={styles.rule} />
             <Text style={styles.signatureMark}>R / I</Text>

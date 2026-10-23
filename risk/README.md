@@ -14,6 +14,8 @@ There are no tab screens. Customers must be signed in to enter the collection or
 4. In Supabase Authentication settings, choose whether new accounts require email confirmation. With confirmation enabled, new customers confirm their email and then sign in before shopping.
 5. Start the app with `npm install` followed by `npm run start`.
 
+The TypeScript database and shop models in [`src/models`](./src/models) mirror the SQL schema and are used to type-check Supabase queries and checkout.
+
 Products and sample prices are in USD. Update the sample product data and the currency formatters in `src/app/shop.tsx`, `src/app/cart.tsx`, and `src/app/checkout.tsx` for the store's market.
 
 ## Checkout and payments

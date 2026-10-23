@@ -41,8 +41,8 @@ export default function LoginScreen() {
           behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
           <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-            <Text style={styles.wordmark}>RISK IT</Text>
-            <PageTitle eyebrow="WELCOME BACK" title="Good to see you." />
+            <Text style={styles.wordmark}>RISK</Text>
+            <PageTitle eyebrow="WELCOME BACK TO RISK" title="Good to see you." />
             <Text style={styles.copy}>Sign in to pick up where you left off.</Text>
             {error ? <Text accessibilityRole="alert" style={styles.error}>{error}</Text> : null}
             <View style={styles.form}>
@@ -68,7 +68,7 @@ export default function LoginScreen() {
               <Button label="SIGN IN" onPress={() => void handleLogin()} loading={loading} />
             </View>
             <Text style={styles.footer}>
-              New to RISK IT?{" "}
+              New to RISK?{" "}
               <Link href="/signup" style={styles.link}>Create an account</Link>
             </Text>
           </ScrollView>

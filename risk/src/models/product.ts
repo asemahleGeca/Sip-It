@@ -1,14 +1,17 @@
-export type Product = {
-  id: string;
-  name: string;
-  slug: string;
-  description: string;
-  price: number;
-  image_url: string | null;
-  category: string;
-  sizes: string[];
-  stock: number;
-};
+import type { Database } from "./database";
+
+export type Product = Pick<
+  Database["public"]["Tables"]["products"]["Row"],
+  | "id"
+  | "name"
+  | "slug"
+  | "description"
+  | "price"
+  | "image_url"
+  | "category"
+  | "sizes"
+  | "stock"
+>;
 
 export type CartLine = {
   product: Product;
