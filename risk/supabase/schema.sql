@@ -22,7 +22,6 @@ create sequence if not exists public.order_number_seq;
 
 create table if not exists public.orders (
   id uuid primary key default gen_random_uuid(),
-  order_number bigint not null default nextval('public.order_number_seq'),
   user_id uuid not null references auth.users (id) on delete restrict,
   status text not null default 'awaiting_payment'
     check (status in ('awaiting_payment', 'paid', 'cancelled', 'fulfilled')),
@@ -31,12 +30,29 @@ create table if not exists public.orders (
   created_at timestamptz not null default now()
 );
 
+alter table public.orders
+  add column if not exists order_number bigint;
+
 update public.orders
 set order_number = nextval('public.order_number_seq')
 where order_number is null;
 
 alter table public.orders
-  alter column order_number set default nextval('public.order_number_seq'),
+  alter column order_number set default nextval('public.order_number_seq');
+
+select setval(
+  'public.order_number_seq',
+  greatest(
+    (
+      select case when is_called then last_value + 1 else last_value end
+      from public.order_number_seq
+    ),
+    coalesce((select max(order_number) + 1 from public.orders), 1)
+  ),
+  false
+);
+
+alter table public.orders
   alter column order_number set not null;
 
 create unique index if not exists orders_order_number_key

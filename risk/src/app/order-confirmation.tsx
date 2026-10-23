@@ -19,8 +19,8 @@ export default function OrderConfirmationScreen() {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (!orderId || !session) return;
     const currentOrderId = orderId;
-    if (!currentOrderId || !session) return;
     let active = true;
 
     async function loadOrder() {

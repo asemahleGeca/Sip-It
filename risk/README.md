@@ -10,11 +10,13 @@ There are no tab screens. Customers must be signed in to enter the collection or
 
 1. Create a Supabase project.
 2. Copy `.env.example` to `.env` and set the project URL and **anon/publishable** key. Never put a service-role key in the app.
-3. Run [`supabase/schema.sql`](./supabase/schema.sql) in the Supabase SQL Editor. It creates the profile, product, order, and order-item tables; row-level-security policies; a profile trigger; an atomic stock-checking `place_order` RPC; and three sample products.
+3. Run [`supabase/schema.sql`](./supabase/schema.sql) in the Supabase SQL Editor to create the profile, product, order, and order-item tables; row-level-security policies; a profile trigger; an atomic stock-checking `place_order` RPC; and three sample products. The matching initial migration is in `supabase/migrations/`.
 4. In Supabase Authentication settings, choose whether new accounts require email confirmation. With confirmation enabled, new customers confirm their email and then sign in before shopping.
 5. Start the app with `npm install` followed by `npm run start`.
 
 The TypeScript database and shop models in [`src/models`](./src/models) mirror the SQL schema and are used to type-check Supabase queries and checkout.
+
+To connect this repository to Supabase Branching, configure the Supabase GitHub integration for this repository, set its working directory to `.`, and enable automatic branching if you want preview branches. Supabase applies new SQL files in `supabase/migrations/` to production and preview branches. Local `.env` files are ignored; configure the public Supabase URL and publishable key in each app environment separately.
 
 Products and sample prices are in USD. Update the sample product data and the currency formatters in `src/app/shop.tsx`, `src/app/cart.tsx`, and `src/app/checkout.tsx` for the store's market.
 
