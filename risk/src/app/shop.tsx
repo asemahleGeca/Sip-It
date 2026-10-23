@@ -80,6 +80,9 @@ export default function ShopScreen() {
         <View style={styles.header}>
           <Text style={styles.wordmark}>RISK IT</Text>
           <View style={styles.headerActions}>
+            <Pressable accessibilityRole="button" onPress={() => router.push("/track-order")}>
+              <Text style={styles.headerLink}>TRACK ORDER</Text>
+            </Pressable>
             <Pressable accessibilityRole="button" onPress={() => router.push("/cart")}>
               <Text style={styles.headerLink}>BAG ({itemCount})</Text>
             </Pressable>

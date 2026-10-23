@@ -72,6 +72,7 @@ export type Database = {
       orders: {
         Row: {
           id: string;
+          order_number: number;
           user_id: string;
           status: "awaiting_payment" | "paid" | "cancelled" | "fulfilled";
           total: number;
@@ -80,6 +81,7 @@ export type Database = {
         };
         Insert: {
           id?: string;
+          order_number?: number;
           user_id: string;
           status?: "awaiting_payment" | "paid" | "cancelled" | "fulfilled";
           total?: number;
@@ -88,6 +90,7 @@ export type Database = {
         };
         Update: {
           id?: string;
+          order_number?: number;
           user_id?: string;
           status?: "awaiting_payment" | "paid" | "cancelled" | "fulfilled";
           total?: number;

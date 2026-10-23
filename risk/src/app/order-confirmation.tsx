@@ -1,14 +1,50 @@
+import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Button } from "../components/shop-ui";
+import { Button, PageTitle } from "../components/shop-ui";
 import { ScreenBackground } from "../components/screen-background";
+import { useAuth } from "../context/auth";
+import { supabase } from "../lib/supabaseClient";
+import type { OrderTracking } from "../models/order";
+import { formatOrderNumber } from "../models/order";
 import { colors } from "../theme/colors";
 
 export default function OrderConfirmationScreen() {
   const router = useRouter();
   const { orderId } = useLocalSearchParams<{ orderId?: string }>();
+  const { session } = useAuth();
+  const [order, setOrder] = useState<OrderTracking | null>(null);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const currentOrderId = orderId;
+    if (!currentOrderId || !session) return;
+    let active = true;
+
+    async function loadOrder() {
+      const { data, error: queryError } = await supabase
+        .from("orders")
+        .select("id, order_number, status, total, created_at")
+        .eq("id", currentOrderId)
+        .maybeSingle();
+
+      if (!active) return;
+      if (queryError) setError(queryError.message);
+      else if (data) setOrder(data);
+      else setError("We couldn't find this order. Check your order history or try tracking it.");
+    }
+
+    void loadOrder().catch((loadError: unknown) => {
+      if (active) {
+        setError(loadError instanceof Error ? loadError.message : "Could not load your order.");
+      }
+    });
+    return () => {
+      active = false;
+    };
+  }, [orderId, session]);
 
   return (
     <ScreenBackground>
@@ -21,11 +57,25 @@ export default function OrderConfirmationScreen() {
             Your order has been recorded. Payment has not been collected; we’ll need to connect a
             payment provider before this shop can take payment.
           </Text>
-          {orderId ? (
+          {order ? (
             <View style={styles.reference}>
-              <Text style={styles.referenceLabel}>ORDER REFERENCE</Text>
-              <Text selectable style={styles.referenceValue}>{orderId}</Text>
+              <Text style={styles.referenceLabel}>ORDER NUMBER</Text>
+              <Text selectable style={styles.referenceValue}>
+                {formatOrderNumber(order.order_number)}
+              </Text>
+              <Text style={styles.status}>STATUS · {order.status.replaceAll("_", " ").toUpperCase()}</Text>
             </View>
+          ) : null}
+          {error ? <Text accessibilityRole="alert" style={styles.error}>{error}</Text> : null}
+          {order ? (
+            <Button
+              label="TRACK THIS ORDER"
+              variant="outline"
+              onPress={() => router.push({
+                pathname: "/track-order",
+                params: { orderNumber: formatOrderNumber(order.order_number) },
+              })}
+            />
           ) : null}
           <Button label="BACK TO THE COLLECTION" onPress={() => router.replace("/shop")} />
           <Pressable onPress={() => router.replace("/")}>
@@ -47,5 +97,7 @@ const styles = StyleSheet.create({
   reference: { gap: 7, borderWidth: 1, borderColor: colors.border, padding: 14 },
   referenceLabel: { color: colors.muted, fontSize: 9, fontWeight: "700", letterSpacing: 1.4 },
   referenceValue: { color: colors.text, fontSize: 12 },
+  status: { color: colors.muted, fontSize: 10, fontWeight: "700", letterSpacing: 0.7 },
+  error: { color: colors.danger, fontSize: 13, lineHeight: 19 },
   home: { color: colors.muted, fontSize: 10, fontWeight: "700", letterSpacing: 1, textAlign: "center" },
 });
