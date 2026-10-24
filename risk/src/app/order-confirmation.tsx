@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Button, PageTitle } from "../components/shop-ui";
+import { BackButton, Button } from "../components/shop-ui";
 import { ScreenBackground } from "../components/screen-background";
 import { useAuth } from "../context/auth";
 import { supabase } from "../lib/supabaseClient";
@@ -50,6 +50,7 @@ export default function OrderConfirmationScreen() {
     <ScreenBackground>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.content}>
+          <BackButton label="BACK TO SHOP" fallback="/shop" />
           <Text style={styles.eyebrow}>ORDER RECEIVED</Text>
           <Text style={styles.mark}>✓</Text>
           <Text style={styles.title}>That’s a good move.</Text>

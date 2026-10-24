@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Button, Field, PageTitle } from "../components/shop-ui";
+import { BackButton, Button, Field, PageTitle } from "../components/shop-ui";
 import { ScreenBackground } from "../components/screen-background";
 import { useAuth } from "../context/auth";
 import { supabase } from "../lib/supabaseClient";
@@ -74,8 +74,21 @@ export default function TrackOrderScreen() {
           <View style={styles.gate}>
             <PageTitle eyebrow="TRACK ORDER" title="Sign in to continue." />
             <Text style={styles.copy}>Use your order number to check the status of a recent purchase.</Text>
-            <Button label="GO TO LOGIN" onPress={() => router.replace("/login")} />
-            <Button label="CREATE ACCOUNT" variant="outline" onPress={() => router.replace("/signup")} />
+            <Button
+              label="LOGIN"
+              onPress={() => router.replace({
+                pathname: "/login",
+                params: { returnTo: "/track-order" },
+              })}
+            />
+            <Button
+              label="REGISTER"
+              variant="outline"
+              onPress={() => router.replace({
+                pathname: "/register",
+                params: { returnTo: "/track-order" },
+              })}
+            />
           </View>
         </SafeAreaView>
       </ScreenBackground>
@@ -90,7 +103,7 @@ export default function TrackOrderScreen() {
           behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
           <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-            <Text style={styles.back} onPress={() => router.back()}>←  BACK</Text>
+            <BackButton label="BACK" fallback="/shop" />
             <PageTitle eyebrow="TRACK ORDER" title="Follow your delivery." />
             <Text style={styles.copy}>Enter your order number to see its current status.</Text>
             <Field

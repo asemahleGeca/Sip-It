@@ -12,13 +12,12 @@ export default function RootLayout() {
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="index" />
             <Stack.Screen name="login" />
-            <Stack.Screen name="signup" />
+            <Stack.Screen name="register" />
             <Stack.Screen name="shop" />
             <Stack.Screen name="cart" />
             <Stack.Screen name="checkout" />
             <Stack.Screen name="order-confirmation" />
             <Stack.Screen name="track-order" />
-            <Stack.Screen name="register" />
           </Stack>
         </CartProvider>
       </AuthProvider>

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Button, Field, PageTitle } from "../components/shop-ui";
+import { BackButton, Button, Field, PageTitle } from "../components/shop-ui";
 import { ScreenBackground } from "../components/screen-background";
 import { useAuth } from "../context/auth";
 import { useCart } from "../context/cart";
@@ -88,8 +88,18 @@ export default function CheckoutScreen() {
           <View style={styles.gate}>
             <PageTitle eyebrow="CHECKOUT" title="Sign in to continue." />
             <Text style={styles.copy}>Your bag is saved while you sign in.</Text>
-            <Link href="/login" style={styles.link}>Sign in to your account</Link>
-            <Link href="/signup" style={styles.link}>Create an account</Link>
+            <Link
+              href={{ pathname: "/login", params: { returnTo: "/checkout" } }}
+              style={styles.link}
+            >
+              Sign in to your account
+            </Link>
+            <Link
+              href={{ pathname: "/register", params: { returnTo: "/checkout" } }}
+              style={styles.link}
+            >
+              Register
+            </Link>
           </View>
         </SafeAreaView>
       </ScreenBackground>
@@ -117,7 +127,7 @@ export default function CheckoutScreen() {
           behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
           <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-            <Text style={styles.back} onPress={() => router.back()}>←  BACK TO BAG</Text>
+            <BackButton label="BACK TO BAG" fallback="/cart" />
             <PageTitle eyebrow="STEP 03 / DELIVERY" title="Make it yours." />
             <Text style={styles.copy}>Where should we send your RISK IT gear?</Text>
             <View style={styles.form}>

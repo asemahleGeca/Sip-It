@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { useRouter } from "expo-router";
 import {
   ActivityIndicator,
   Pressable,
@@ -46,6 +47,30 @@ export function Button({
   );
 }
 
+export function BackButton({
+  label,
+  fallback,
+}: {
+  label: string;
+  fallback: "/" | "/shop" | "/cart";
+}) {
+  const router = useRouter();
+
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      onPress={() => {
+        if (router.canGoBack()) router.back();
+        else router.replace(fallback);
+      }}
+      style={styles.backButton}
+    >
+      <Text style={styles.backButtonText}>←  {label}</Text>
+    </Pressable>
+  );
+}
+
 export function Field({
   label,
   ...props
@@ -81,6 +106,17 @@ export function PageTitle({
 }
 
 const styles = StyleSheet.create({
+  backButton: {
+    alignSelf: "flex-start",
+    paddingVertical: 8,
+    marginBottom: 20,
+  },
+  backButtonText: {
+    color: colors.muted,
+    fontSize: 10,
+    fontWeight: "700",
+    letterSpacing: 1,
+  },
   button: {
     minHeight: 54,
     alignItems: "center",

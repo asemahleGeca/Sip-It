@@ -2,7 +2,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Button, PageTitle } from "../components/shop-ui";
+import { BackButton, Button, PageTitle } from "../components/shop-ui";
 import { ScreenBackground } from "../components/screen-background";
 import { useCart } from "../context/cart";
 import { colors } from "../theme/colors";
@@ -18,9 +18,7 @@ export default function CartScreen() {
     <ScreenBackground>
       <SafeAreaView style={styles.safeArea}>
         <ScrollView contentContainerStyle={styles.content}>
-          <Pressable onPress={() => router.back()}>
-            <Text style={styles.back}>←  BACK TO SHOP</Text>
-          </Pressable>
+          <BackButton label="BACK TO SHOP" fallback="/shop" />
           <PageTitle eyebrow="YOUR PICKS" title="The bag." />
           {items.length === 0 ? (
             <View style={styles.empty}>

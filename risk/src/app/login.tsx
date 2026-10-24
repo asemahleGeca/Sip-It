@@ -1,20 +1,28 @@
 import { useState } from "react";
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from "react-native";
-import { Link, useRouter } from "expo-router";
+import { Link, useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Button, Field, PageTitle } from "../components/shop-ui";
+import { BackButton, Button, Field, PageTitle } from "../components/shop-ui";
 import { ScreenBackground } from "../components/screen-background";
 import { useAuth } from "../context/auth";
+import { getPostAuthRoute } from "../lib/navigation";
 import { colors } from "../theme/colors";
 
 export default function LoginScreen() {
   const router = useRouter();
-  const { signIn } = useAuth();
+  const { returnTo } = useLocalSearchParams<{ returnTo?: string }>();
+  const { signIn, session, loading: authLoading } = useAuth();
+  const destination = getPostAuthRoute(returnTo);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!authLoading && session) router.replace(destination);
+  }, [authLoading, destination, router, session]);
 
   async function handleLogin() {
     setError("");
@@ -25,7 +33,7 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       await signIn(email.trim(), password);
-      router.replace("/shop");
+      router.replace(destination);
     } catch (loginError) {
       setError(loginError instanceof Error ? loginError.message : "Could not sign in.");
     } finally {
@@ -41,6 +49,7 @@ export default function LoginScreen() {
           behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
           <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+            <BackButton label="BACK" fallback="/" />
             <Text style={styles.wordmark}>RISK</Text>
             <PageTitle eyebrow="WELCOME BACK TO RISK" title="Good to see you." />
             <Text style={styles.copy}>Sign in to pick up where you left off.</Text>
@@ -65,11 +74,16 @@ export default function LoginScreen() {
                 textContentType="password"
                 onSubmitEditing={() => void handleLogin()}
               />
-              <Button label="SIGN IN" onPress={() => void handleLogin()} loading={loading} />
+              <Button label="LOGIN" onPress={() => void handleLogin()} loading={loading} />
             </View>
             <Text style={styles.footer}>
               New to RISK?{" "}
-              <Link href="/signup" style={styles.link}>Create an account</Link>
+              <Link
+                href={{ pathname: "/register", params: { returnTo: destination } }}
+                style={styles.link}
+              >
+                Register
+              </Link>
             </Text>
           </ScrollView>
         </KeyboardAvoidingView>

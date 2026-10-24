@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ScreenBackground } from "../components/screen-background";
@@ -36,16 +36,20 @@ export default function WelcomeScreen() {
           </View>
           <Text style={styles.tagline}>THE COURAGE TO BE DIFFERENT.</Text>
         </View>
-        <View style={styles.actions}>
-          <Text style={styles.intro}>Considered essentials. Made to be remembered.</Text>
-          <Button label="DISCOVER THE COLLECTION" onPress={() => router.push("/signup")} />
-          <Button
-            label="SIGN IN"
-            variant="outline"
-            onPress={() => router.push("/login")}
-          />
-          <Text style={styles.footer}>BUILT FOR THE BOLD. WORN YOUR WAY.</Text>
-        </View>
+        {loading ? (
+          <ActivityIndicator accessibilityLabel="Restoring your session" color={colors.accent} />
+        ) : (
+          <View style={styles.actions}>
+            <Text style={styles.intro}>Considered essentials. Made to be remembered.</Text>
+            <Button label="REGISTER" onPress={() => router.push("/register")} />
+            <Button
+              label="LOGIN"
+              variant="outline"
+              onPress={() => router.push("/login")}
+            />
+            <Text style={styles.footer}>BUILT FOR THE BOLD. WORN YOUR WAY.</Text>
+          </View>
+        )}
       </SafeAreaView>
     </ScreenBackground>
   );
